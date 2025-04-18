@@ -1,0 +1,36 @@
+
+To train model
+
+curl -X POST http://127.0.0.1:5000/train \
+  -F "train_file=@Bank_Loan_Data.csv" \
+  -F "max_depth=4" \
+  -F "learning_rate=0.2" \
+  -F "n_estimators=150" \
+  -F "min_child_weight=1" \
+  -F "max_leaves=10" \
+  -F "subsample=0.9" \
+  -F "scale_pos_weight=1"
+
+To predict from test file
+
+curl -X POST http://127.0.0.1:5000/predict \
+  -F "test_file=@test_data.csv"
+
+To download predictions
+
+curl -O http://127.0.0.1:5000/download
+
+
+Minimal Train command
+
+curl -X POST http://127.0.0.1:5000/train -F "train_file=@Bank_Loan_Data.csv"
+
+Folder setup
+
+G:/MVP/mnt/data/XGB_Default_Predictor/
+
+Bank_Loan_Data.csv         training file
+test_data.csv              test file
+
+
+
