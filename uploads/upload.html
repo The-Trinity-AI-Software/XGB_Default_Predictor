@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Upload CSV for Training</title></head>
+<body>
+  <h2>Train XGBoost Model</h2>
+  <form action="http://127.0.0.1:5000/train" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required><br><br>
+    <label>Max Depth:</label> <input type="number" name="max_depth" value="3"><br><br>
+    <label>Learning Rate:</label> <input type="text" name="learning_rate" value="0.1"><br><br>
+    <label>Estimators:</label> <input type="number" name="n_estimators" value="100"><br><br>
+    <button type="submit">Train</button>
+  </form>
+</body>
+</html>

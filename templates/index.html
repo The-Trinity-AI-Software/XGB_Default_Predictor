@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XGBoost Default Risk Predictor</title>
+</head>
+<body>
+    <h2>Train the Model</h2>
+    <form action="/train" method="post" enctype="multipart/form-data">
+        <input type="file" name="train_file" required>
+        <button type="submit">Train</button>
+    </form>
+
+    <h2>Predict Using Model</h2>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="test_file" required>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if auc %}
+        <h3>Model AUC: {{ auc }}</h3>
+        <img src="{{ url_for('static', filename='feature_importance.png') }}" width="500">
+    {% endif %}
+
+    {% if predictions %}
+        <h3>Predictions Output</h3>
+        <a href="/download">Download CSV</a>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"numerical_features": ["zip_code", "income", "credit_score", "loan_amount", "num_existing_loans"], "categorical_features": ["first_name", "last_name", "date_of_birth", "gender", "ssn", "address", "state", "employment_status", "loan_type", "loan_status"]}
