@@ -1,29 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>XGBoost Default Risk Predictor</title>
+    <title>Loan Default Prediction</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px 40px; }
+        h2 { text-align: center; }
+        .horizontal { display: flex; gap: 20px; }
+        .vertical { display: flex; flex-direction: column; width: 50%; }
+        .panel { border: 1px solid #ccc; border-radius: 6px; padding: 20px; margin-bottom: 20px; background: #f9f9f9; }
+        .slider-label { display: flex; justify-content: space-between; }
+    </style>
 </head>
 <body>
-    <h2>Train the Model</h2>
-    <form action="/train" method="post" enctype="multipart/form-data">
-        <input type="file" name="train_file" required>
-        <button type="submit">Train</button>
-    </form>
 
-    <h2>Predict Using Model</h2>
-    <form action="/predict" method="post" enctype="multipart/form-data">
-        <input type="file" name="test_file" required>
-        <button type="submit">Predict</button>
-    </form>
+<h2>Loan Default Prediction</h2>
 
-    {% if auc %}
-        <h3>Model AUC: {{ auc }}</h3>
-        <img src="{{ url_for('static', filename='feature_importance.png') }}" width="500">
-    {% endif %}
+<div class="horizontal">
+    <!-- Left Panel: Hyperparameter Tuning -->
+    <div class="vertical panel">
+        <form action="/tune" method="post">
+            <h3>Hyperparameter Tuning</h3>
 
-    {% if predictions %}
-        <h3>Predictions Output</h3>
-        <a href="/download">Download CSV</a>
-    {% endif %}
+            <div class="slider-label"><span>Max Depth</span><span id="depth_val">3</span></div>
+            <input type="range" name="max_depth" min="1" max="10" value="3" oninput="depth_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Learning Rate</span><span id="lr_val">0.1</span></div>
+            <input type="range" name="learning_rate" min="0.01" max="0.5" step="0.01" value="0.1" oninput="lr_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Estimators</span><span id="est_val">100</span></div>
+            <input type="range" name="n_estimators" min="50" max="500" step="10" value="100" oninput="est_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Min Child Weight</span><span id="mcw_val">1</span></div>
+            <input type="range" name="min_child_weight" min="1" max="10" value="1" oninput="mcw_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Max Leaves</span><span id="leaves_val">31</span></div>
+            <input type="range" name="max_leaves" min="10" max="100" value="31" oninput="leaves_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Subsample</span><span id="sub_val">1.0</span></div>
+            <input type="range" name="subsample" min="0.1" max="1.0" step="0.1" value="1.0" oninput="sub_val.innerText = this.value"><br>
+
+            <div class="slider-label"><span>Scale Pos Weight</span><span id="spw_val">1.0</span></div>
+            <input type="range" name="scale_pos_weight" min="0.1" max="10" step="0.1" value="1.0" oninput="spw_val.innerText = this.value"><br>
+
+            <br><button type="submit">Apply Tuning</button>
+        </form>
+    </div>
+
+    <!-- Right Panel: Upload and Train -->
+    <div class="vertical panel">
+        <form action="/train" method="post" enctype="multipart/form-data">
+            <h4>Upload Training Data</h4>
+            <input type="file" name="train_file" required><br><br>
+            <button type="submit">Train Model</button>
+        </form>
+
+        {% if model_trained and preview_data %}
+            <div style="overflow-x: auto; max-width: 100%;">
+                {{ preview_data|safe }}
+            </div>
+            <hr>
+            <h4>Upload Test Data</h4>
+            <form action="/predict" method="post" enctype="multipart/form-data">
+                <input type="file" name="test_file" required><br><br>
+                <button type="submit">Predict</button>
+            </form>
+        {% else %}
+            <p>Please train the model to enable prediction.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if predictions and output_data %}
+<div class="panel">
+    <h3>📈 Prediction Results (Top 10 rows)</h3>
+    {{ output_data|safe }}
+    <br>
+    <a href="/download">📥 Download Full JSON</a>
+</div>
+{% endif %}
+
+{% if roc_ready %}
+<div class="panel">
+    <h3>📊 Model Evaluation</h3>
+    <p><strong>AUC Score:</strong> {{ auc }}</p>
+    <h4>ROC Curve:</h4>
+    <img src="{{ url_for('static', filename='roc_curve.png') }}" width="500"><br><br>
+    <h4>Classification Report:</h4>
+    {{ class_report|safe }}
+</div>
+{% endif %}
+
 </body>
 </html>
